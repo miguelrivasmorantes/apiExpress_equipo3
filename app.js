@@ -6,6 +6,9 @@ var logger = require('morgan');
 
 var app = express();
 
+app.set('view engine', 'ejs');  
+app.set('views', path.join(__dirname, 'views'));  
+
 var MongoDBUtil = require('./modules/mongodb/mongodb.module').MongoDBUtil;
 
 var UserController = require('./modules/user/user.module')().UserController;
@@ -27,6 +30,9 @@ app.get('/', function (req, res) {
         status: 'up'
     });
 });
+
+var indexRouter = require('./routes/index');  
+app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
