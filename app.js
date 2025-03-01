@@ -34,6 +34,12 @@ app.get('/', function (req, res) {
 var indexRouter = require('./routes/index');  
 app.use('/', indexRouter);
 
+var hotelesRouter = require('./routes/hoteles');
+app.use('/hoteles', hotelesRouter);
+
+const reservasRouter = require('./routes/reservas');
+app.use('/reservas', reservasRouter);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404));
