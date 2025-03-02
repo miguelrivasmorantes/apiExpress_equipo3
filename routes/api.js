@@ -13,6 +13,8 @@ router.use("/", holaMundoRouter);
 //Rutas para administrar usuarios
 
 //Rutas para administrar reservas
+const reservasRouter = require("./api/reservas");
+router.use("/", reservasRouter);
 
 //Rutas para administrar pagos
 
