@@ -16,6 +16,9 @@ router.use("/", holaMundoRouter);
 
 //Rutas para administrar pagos
 
+const pagoRouter = require("./api/pagos");
+router.use("/pagos", pagoRouter);
+
 //Rutas para administrar reseñas
 
 module.exports = router;
