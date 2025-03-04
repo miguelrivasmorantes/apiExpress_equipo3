@@ -27,4 +27,34 @@ router.get("/reservas", async (req, res) => {
   }
 });
 
+router.get("/reservas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const reserva = await Reserva.findById(id)
+      .populate({
+        path: "usuario_id",
+        model: Usuario,
+        select: "nombre email telefono",
+      })
+      .populate({
+        path: "hotel_id",
+        model: Hotel,
+        select: "nombre direccion telefono",
+      })
+      .populate({
+        path: "habitacion_id",
+        model: Habitacion,
+        select: "tipo capacidad precio_por_noche",
+      });
+
+    if (!reserva) {
+      return res.status(404).json({ error: "Reserva no encontrada" });
+    }
+
+    res.json(reserva);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
