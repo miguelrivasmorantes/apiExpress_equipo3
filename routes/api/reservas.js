@@ -88,4 +88,41 @@ router.get("/reservas/usuario/:id", async (req, res) => {
   }
 });
 
+
+router.post("/reservas", async (req, res) => {
+  try {
+    const { usuario_id, hotel_id, habitacion_id, fecha_inicio, fecha_fin } = req.body;
+
+    const usuarioExiste = await Usuario.findById(usuario_id);
+    if (!usuarioExiste) return res.status(400).json({ error: "Usuario no encontrado" });
+
+    const hotelExiste = await Hotel.findById(hotel_id);
+    if (!hotelExiste) return res.status(400).json({ error: "Hotel no encontrado" });
+
+    const habitacionExiste = await Habitacion.findById(habitacion_id);
+    if (!habitacionExiste) return res.status(400).json({ error: "Habitación no encontrada" });
+
+    if (habitacionExiste.hotel_id.toString() !== hotel_id) {
+      return res.status(400).json({ error: "La habitación no pertenece al hotel indicado" });
+    }
+
+    const diasReserva = Math.ceil((new Date(fecha_fin) - new Date(fecha_inicio)) / (1000 * 60 * 60 * 24));
+    const precio_total = diasReserva * habitacionExiste.precio_por_noche;
+
+    const nuevaReserva = new Reserva({
+      usuario_id,
+      hotel_id,
+      habitacion_id,
+      fecha_inicio,
+      fecha_fin,
+      precio_total,
+    });
+
+    await nuevaReserva.save();
+    res.status(201).json(nuevaReserva);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
