@@ -3,46 +3,6 @@ const router = express.Router();
 const { Pago } = require('../../models/pago');
 const { Reserva } = require('../../models/reserva');
 const { Usuario } = require('../../models/usuario');
-const { Hotel } = require('../../models/hotel');
-
-router.get('/', async (req, res) => {
-    try {
-        const pagos = await Pago.find()
-            .populate({
-                path: 'reserva_id',
-                model: Reserva,
-                select: "fecha_inicio fecha_fin precio_total"
-            })
-        res.send(pagos);
-    } catch (error) {
-        res.status(500).send
-    }
-});
-
-router.get('/historial', async (req, res) => {
-    try {
-        const pago = await Pago.find()
-            .populate({
-                path: 'reserva_id',
-                model: Reserva,
-                select: " hotel_id fecha_inicio fecha_fin",
-                populate: {
-                    path: "hotel_id",
-                    model: Hotel,
-                    select: "nombre servicios"
-                }
-            })
-            .populate({
-                path: 'usuario_id',
-                model: Usuario,
-                select: "nombre email"
-            })
-            .select('fecha_pago monto metodo_pago');
-        res.send(pago);
-    } catch (error) {
-        res.status(500).send
-    }
-});
 
 router.post('/', async (req, res) => {
     try {
