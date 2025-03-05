@@ -125,6 +125,11 @@ router.post("/reservas", async (req, res) => {
     });
 
     await nuevaReserva.save();
+
+    await Usuario.findByIdAndUpdate(usuario_id, {
+      $push: { historial_reservas: nuevaReserva._id }
+    });
+
     res.status(201).json(nuevaReserva);
   } catch (error) {
     res.status(500).json({ error: error.message });
