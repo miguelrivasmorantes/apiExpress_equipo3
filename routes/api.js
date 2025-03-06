@@ -11,8 +11,6 @@ const userRouter = require("../modules/users/user.module")().UserController;
 router.use("/usuarios", userRouter);
 
 //Rutas para administrar reservas
-const reservasRouter = require("../modules/reservations/reservation.module");
-router.use("/reservas", reservasRouter);
 
 //Rutas para administrar pagos
 
