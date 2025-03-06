@@ -11,16 +11,12 @@ app.set('views', path.join(__dirname, 'views'));
 
 var MongoDBUtil = require('./modules/mongodb/mongodb.module').MongoDBUtil;
 
-var UserController = require('./modules/user/user.module')().UserController;
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 
 MongoDBUtil.init();
-
-app.use('/users', UserController);
 
 app.get('/', function (req, res) {
     var pkg = require(path.join(__dirname, 'package.json'));
