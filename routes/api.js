@@ -5,7 +5,6 @@ const holaMundoRouter = require("./api/holaMundo");
 router.use("/", holaMundoRouter);
 
 
-
 //Rutas para administrar hoteles
 
 //Rutas para administrar habitaciones
@@ -14,6 +13,9 @@ router.use("/", holaMundoRouter);
 
 const usuarioRouter = require("./api/usuarios");
 router.use("/usuarios", usuarioRouter);
+
+const userRouter = require('../modules/user/user.module')().UserController;
+router.use("/users", userRouter);
 
 //Rutas para administrar reservas
 
