@@ -7,12 +7,26 @@
     getUserById: getUserById,
     modifyUser: modifyUser,
     removeUser: removeUser,
+    loginUsers: loginUsers,
   };
 
   var UserService = require("./user.module")().UserService;
 
   function addUser(req, res, next) {
     UserService.createUser(req.body).then(success).catch(failure);
+
+    function success(data) {
+      req.response = data;
+      next();
+    }
+
+    function failure(error) {
+      next(error);
+    }
+  }
+
+  function loginUsers(req, res, next) {
+    UserService.loginUsers(req.body).then(success).catch(failure);
 
     function success(data) {
       req.response = data;
@@ -54,27 +68,27 @@
   function modifyUser(req, res, next) {
     UserService.updateUser(req.params.usuario_id, req.body)
       .then(success)
-      .catch(error);
+      .catch(failure);
 
     function success(data) {
       req.response = data;
       next();
     }
 
-    function error(err) {
+    function failure(err) {
       next(err);
     }
   }
 
   function removeUser(req, res, next) {
-    UserService.deleteUser(req.params.usuario_id).then(success).catch(error);
+    UserService.deleteUser(req.params.usuario_id).then(success).catch(failure);
 
     function success(data) {
       req.response = data;
       next();
     }
 
-    function error(err) {
+    function failure(err) {
       next(err);
     }
   }

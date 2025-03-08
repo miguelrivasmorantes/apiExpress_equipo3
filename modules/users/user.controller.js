@@ -14,6 +14,10 @@
     res.status(200).json(req.response);
   });
 
+  router.post("/login", UserMiddleware.loginUsers, function (req, res) {
+    res.status(200).json(req.response);
+  });
+
   router.get("/:usuario_id", UserMiddleware.getUserById, function (req, res) {
     res.status(200).json(req.response);
   });
