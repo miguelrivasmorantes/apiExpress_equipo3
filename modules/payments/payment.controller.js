@@ -14,8 +14,13 @@
     res.status(200).json(req.response);
   });
 
-  router.get("/historial/:usuario_id", PaymentMiddleware.getUserPayments, function (req, res) {
+  router.get("/usuario/:usuario_id", PaymentMiddleware.getUserPayments, function (req, res) {
     res.status(200).json(req.response);
   });
+
+  router.get("/reserva/:reserva_id", PaymentMiddleware.getReservationPayments, function (req, res) {
+    res.status(200).json(req.response);
+  });
+
   module.exports = router;
 })();

@@ -25,7 +25,7 @@ const PaymentSchema = mongoose.Schema({
     },
     estado: {
       type: String,
-      enum: ("completado", "pendiente", "reembolsado"),
+      enum: ["completado", "pendiente", "reembolsado"],
       required: true,
     },
 });

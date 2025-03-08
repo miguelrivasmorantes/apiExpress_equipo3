@@ -5,6 +5,7 @@
     addPayment: addPayment,
     getPayments: getPayments,
     getUserPayments: getUserPayments,
+    getReservationPayments: getReservationPayments,
   };
 
   var PaymentService = require("./payment.module")().PaymentService;
@@ -14,6 +15,7 @@
 
     function success(data) {
       req.response = data;
+      console.log(data);
       next();
     }
 
@@ -37,18 +39,23 @@
     }
   }
 
-  function getUserPayments(req, res, next) {
-    PaymentService.fetchPaymentByUser(req.params.usuario_id)
-      .then(success)
-      .catch(failure);
-
-    function success(data) {
-      req.response = data;
+  async function getUserPayments(req, res, next) {
+    try {
+      const payment = await PaymentService.fetchPaymentByUserId(req.params.usuario_id);
+      req.response = payment;
       next();
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
+  }
 
-    function failure(error) {
-      next(error);
+  async function getReservationPayments(req, res, next) {
+    try {
+      const payment = await PaymentService.fetchPaymentByReservationId(req.params.usuario_id);
+      req.response = payment;
+      next();
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   }
 })();
