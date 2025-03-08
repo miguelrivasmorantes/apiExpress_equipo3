@@ -19,7 +19,7 @@ services:
     ports:
       - "27021:27017"
     volumes:
-      - ./database/backups/ApiExpress_equipo3:/backup
+      - ./database/backups/ApiExpress:/backup
     networks:
       - api-network
 

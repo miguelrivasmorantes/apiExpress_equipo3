@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copia package.json e instala dependencias
 COPY package*.json ./
-RUN npm install --production
+RUN npm install --production && npm install -g nodemon
 
 # Copia el resto de la aplicación
 COPY . .

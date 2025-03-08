@@ -19,16 +19,15 @@
     return User.find({}).exec();
   }
 
-  function fetchUserById(userId) {
-    return User.findById(userId).exec();
+  function fetchUserById(usuario_id) {
+    return User.findById(usuario_id).exec();
   }
 
-  function updateUser(userId, user) {
-    w;
-    return User.findByIdAndUpdate(userId, user, { new: true }).exec();
+  function updateUser(usuario_id, user) {
+    return User.findByIdAndUpdate(usuario_id, user, { new: true }).exec();
   }
 
-  function deleteUser(userId) {
-    return User.findByIdAndRemove(userId).exec();
+  function deleteUser(usuario_id) {
+    return User.findByIdAndRemove(usuario_id).exec();
   }
 })();

@@ -39,7 +39,7 @@
   }
 
   function getUserById(req, res, next) {
-    UserService.fetchUserById(req.params.userId).then(success).catch(failure);
+    UserService.fetchUserById(req.params.usuario_id).then(success).catch(failure);
 
     function success(data) {
       req.response = data;
@@ -52,7 +52,7 @@
   }
 
   function modifyUser(req, res, next) {
-    UserService.updateUser(req.params.userId, req.body)
+    UserService.updateUser(req.params.usuario_id, req.body)
       .then(success)
       .catch(error);
 
@@ -67,7 +67,7 @@
   }
 
   function removeUser(req, res, next) {
-    UserService.deleteUser(req.params.userId).then(success).catch(error);
+    UserService.deleteUser(req.params.usuario_id).then(success).catch(error);
 
     function success(data) {
       req.response = data;
