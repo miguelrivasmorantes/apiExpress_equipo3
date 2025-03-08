@@ -14,6 +14,9 @@ router.use("/usuarios", userRouter);
 
 //Rutas para administrar pagos
 
+const paymentRouter = require("../modules/payments/payment.module")().PaymentController;
+router.use("/pagos", paymentRouter);
+
 //Rutas para administrar reseñas
 
 module.exports = router;

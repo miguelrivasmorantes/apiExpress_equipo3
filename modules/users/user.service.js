@@ -24,7 +24,6 @@
   }
 
   function updateUser(userId, user) {
-    w;
     return User.findByIdAndUpdate(userId, user, { new: true }).exec();
   }
 
