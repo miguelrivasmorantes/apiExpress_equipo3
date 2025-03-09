@@ -10,15 +10,15 @@
     res.status(201).json(req.response);
   });
 
-  router.get("/", PaymentMiddleware.getPayments, function (req, res) {
+  router.get("/", PaymentMiddleware.getPayments, PaymentMiddleware.formatPaymentDates, function (req, res) {
     res.status(200).json(req.response);
   });
 
-  router.get("/usuario/:usuario_id", PaymentMiddleware.getUserPayments, function (req, res) {
+  router.get("/usuario/:usuario_id", PaymentMiddleware.getPaymentsByUserId, PaymentMiddleware.formatPaymentDates, function (req, res) {
     res.status(200).json(req.response);
   });
 
-  router.get("/reserva/:reserva_id", PaymentMiddleware.getReservationPayments, function (req, res) {
+  router.get("/reserva/:reserva_id", PaymentMiddleware.getPaymentsByReservationId, PaymentMiddleware.formatPaymentDates, function (req, res) {
     res.status(200).json(req.response);
   });
 
