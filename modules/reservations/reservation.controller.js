@@ -25,6 +25,10 @@
   router.put("/:reservationId", ReservationMiddleware.modifyReservation, function (req, res) {
     res.status(201).json(req.response);
   });
+
+  router.delete("/:reservationId", ReservationMiddleware.removeReservation, function (req, res) {
+    res.status(201).json(req.response);
+  });
   
   module.exports = router;
 })();

@@ -7,6 +7,7 @@
     fetchReservationById: fetchReservationById,
     fetchReservationsByUserId: fetchReservationsByUserId,
     updateReservation: updateReservation,
+    deleteReservation: deleteReservation,
   };
 
   const { Reservation } = require("./reservation.model");
@@ -202,4 +203,19 @@
       });
   }
   
+  function deleteReservation(reservationId) {
+    return Reservation.findById(reservationId)
+      .then(reserva => {
+        if (!reserva) throw new Error("Reserva no encontrada");
+  
+        const usuarioId = reserva.usuario_id.toString();
+  
+        return Promise.all([
+          User.findByIdAndUpdate(usuarioId, {
+            $pull: { historial_reservas: reservationId },
+          }),
+          Reservation.findByIdAndDelete(reservationId),
+        ]);
+      });
+  }  
 })();
