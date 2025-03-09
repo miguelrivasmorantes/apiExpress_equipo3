@@ -6,6 +6,7 @@
     fetchReservations: fetchReservations,
     fetchReservationById: fetchReservationById,
     fetchReservationsByUserId: fetchReservationsByUserId,
+    updateReservation: updateReservation,
   };
 
   const { Reservation } = require("./reservation.model");
@@ -61,7 +62,6 @@
         }).then(() => nuevaReserva);
       });
   }
-  
   
   function fetchReservations() {
     return Reservation.find()
@@ -121,4 +121,85 @@
         }));
       });
   }
+
+  function updateReservation(reservationId, updatedData) {
+    return Reservation.findById(reservationId)
+      .then((reservaExistente) => {
+        if (!reservaExistente) {
+          throw new Error("Reserva no encontrada");
+        }
+  
+        const usuarioAnteriorId = reservaExistente.usuario_id.toString();
+  
+        const nuevaReserva = {
+          usuario_id: updatedData.usuario_id || reservaExistente.usuario_id,
+          hotel_id: updatedData.hotel_id || reservaExistente.hotel_id,
+          habitacion_id: updatedData.habitacion_id || reservaExistente.habitacion_id,
+          fecha_inicio: updatedData.fecha_inicio || reservaExistente.fecha_inicio,
+          fecha_fin: updatedData.fecha_fin || reservaExistente.fecha_fin,
+          estado: updatedData.estado || reservaExistente.estado,
+        };
+  
+        return Promise.all([
+          User.findById(nuevaReserva.usuario_id),
+          Hotel.findById(nuevaReserva.hotel_id),
+          Room.findById(nuevaReserva.habitacion_id),
+          Reservation.findOne({
+            habitacion_id: nuevaReserva.habitacion_id,
+            _id: { $ne: reservationId },
+            $and: [
+              { fecha_inicio: { $lt: nuevaReserva.fecha_fin } },
+              { fecha_fin: { $gt: nuevaReserva.fecha_inicio } },
+            ],
+          }),
+        ]).then(([usuario, hotel, habitacion, conflictoReserva]) => {
+          const errores = [];
+  
+          if (!usuario) errores.push("Usuario no encontrado");
+          if (!hotel) errores.push("Hotel no encontrado");
+          if (!habitacion) errores.push("Habitación no encontrada");
+  
+          if (updatedData.hotel_id || updatedData.habitacion_id) {
+            if (habitacion && habitacion.hotel_id.toString() !== nuevaReserva.hotel_id.toString()) {
+              errores.push("La habitación no pertenece al hotel indicado");
+            }
+          }
+  
+          if (conflictoReserva) {
+            errores.push("La habitación ya está reservada en las fechas seleccionadas");
+          }
+  
+          if (errores.length > 0) throw new Error(errores.join(" | "));
+  
+          const diasReserva = Math.ceil(
+            (new Date(nuevaReserva.fecha_fin) - new Date(nuevaReserva.fecha_inicio)) / (1000 * 60 * 60 * 24)
+          );
+          const precio_total = diasReserva * habitacion.precio_por_noche;
+  
+          return Reservation.findByIdAndUpdate(
+            reservationId,
+            { ...nuevaReserva, precio_total },
+            { new: true }
+          ).then((reservaActualizada) => {
+            if (!reservaActualizada) throw new Error("Error al actualizar la reserva");
+  
+            if (usuarioAnteriorId !== nuevaReserva.usuario_id.toString()) {
+              return Promise.all([
+                User.findByIdAndUpdate(usuarioAnteriorId, {
+                  $pull: { historial_reservas: reservationId },
+                }),
+                User.findByIdAndUpdate(nuevaReserva.usuario_id, {
+                  $addToSet: { historial_reservas: reservationId },
+                }),
+              ]).then(() => reservaActualizada);
+            } else {
+              return User.findByIdAndUpdate(nuevaReserva.usuario_id, {
+                $addToSet: { historial_reservas: reservationId },
+              }).then(() => reservaActualizada);
+            }
+          });
+        });
+      });
+  }
+  
 })();

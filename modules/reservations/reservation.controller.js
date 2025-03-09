@@ -21,6 +21,10 @@
   router.get("/usuario/:userId", ReservationMiddleware.getReservationsByUserId, function (req, res) {
     res.status(200).json(req.response);
   });
+
+  router.put("/:reservationId", ReservationMiddleware.modifyReservation, function (req, res) {
+    res.status(201).json(req.response);
+  });
   
   module.exports = router;
 })();

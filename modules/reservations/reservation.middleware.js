@@ -6,6 +6,7 @@
       getReservations: getReservations,
       getReservationById: getReservationById,
       getReservationsByUserId: getReservationsByUserId,
+      modifyReservation: modifyReservation,
     };
   
     var ReservationService = require("./reservation.module")().ReservationService;
@@ -52,6 +53,21 @@
 
     function getReservationsByUserId(req, res, next) {
       ReservationService.fetchReservationsByUserId(req.params.userId).then(success).catch(failure);
+    
+      function success(data) {
+        req.response = data;
+        next();
+      }
+    
+      function failure(err) {
+        next(err);
+      }
+    }
+
+    function modifyReservation(req, res, next) {
+      ReservationService.updateReservation(req.params.reservationId, req.body)
+        .then(success)
+        .catch(failure);    
     
       function success(data) {
         req.response = data;
