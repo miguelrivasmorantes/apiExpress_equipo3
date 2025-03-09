@@ -17,9 +17,15 @@
     return Promise.all([
       User.findById(reservation.usuario_id),
       Hotel.findById(reservation.hotel_id),
-      Room.findById(reservation.habitacion_id)
+      Room.findById(reservation.habitacion_id),
+      Reservation.findOne({
+        habitacion_id: reservation.habitacion_id,
+        $or: [
+          { fecha_inicio: { $lt: reservation.fecha_fin }, fecha_fin: { $gt: reservation.fecha_inicio } }
+        ]
+      })
     ])
-    .then(([usuario, hotel, habitacion]) => {
+    .then(([usuario, hotel, habitacion, reservaExistente]) => {
       const errores = [];
   
       if (!usuario) errores.push("Usuario no encontrado");
@@ -27,6 +33,9 @@
       if (!habitacion) errores.push("Habitación no encontrada");
       if (habitacion && habitacion.hotel_id.toString() !== reservation.hotel_id) {
         errores.push("La habitación no pertenece al hotel indicado");
+      }
+      if (reservaExistente) {
+        errores.push("La habitación ya está reservada en las fechas seleccionadas");
       }
   
       if (errores.length > 0) throw new Error(errores.join(" | "));
