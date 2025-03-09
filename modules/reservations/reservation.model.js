@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const User = require('../users/user.model');
-const Hotel = require('../hotels/hotel.model');
-const Room = require('../rooms/room.model');
+const users = require('../users/user.model');
+const hotels = require('../hotels/hotel.model');
+const rooms = require('../rooms/room.model');
 
 const ReservationSchema = new Schema({
     usuario_id: {
@@ -41,7 +41,8 @@ const ReservationSchema = new Schema({
     }
 }, {
     timestamps: true,
-    versionKey: true
 });
 
-module.exports = mongoose.model('Reservation', ReservationSchema);
+const Reservation = mongoose.model("Reservation", ReservationSchema, "reservas");
+
+module.exports = { Reservation };

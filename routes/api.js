@@ -12,6 +12,9 @@ router.use("/usuarios", userRouter);
 
 //Rutas para administrar reservas
 
+const reservationRouter = require("../modules/reservations/reservation.module")().ReservationController;
+router.use("/reservas", reservationRouter);
+
 //Rutas para administrar pagos
 
 //Rutas para administrar reseñas
