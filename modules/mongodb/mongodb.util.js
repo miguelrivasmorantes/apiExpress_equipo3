@@ -11,6 +11,7 @@
     var mongodbConfig;
     try {
         mongodbConfig = require('../../config/mongodb/mongodb.config').mongodb;
+        console.log('Usando configuración Inicial (JS)');
     } catch (error) {
         console.log('Usando configuración de respaldo (JSON)');
         mongodbConfig = require('../../config/mongodb/mongodb-config').mongodb;
