@@ -6,15 +6,11 @@
 
   var UserMiddleware = require("./user.module")().UserMiddleware;
 
-  router.post("/", UserMiddleware.addUser, function (req, res) {
+  router.post("/create", UserMiddleware.addUser, function (req, res) {
     res.status(201).json(req.response);
   });
 
   router.get("/", UserMiddleware.getUsers, function (req, res) {
-    res.status(200).json(req.response);
-  });
-
-  router.post("/login", UserMiddleware.loginUsers, function (req, res) {
     res.status(200).json(req.response);
   });
 

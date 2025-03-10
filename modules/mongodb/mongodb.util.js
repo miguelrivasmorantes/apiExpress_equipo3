@@ -6,13 +6,20 @@
     };
 
     var mongoose = require('mongoose');
-
-    var mongodbConfig = require('../../config/mongodb/mongodb-config').mongodb;
+    
+    // Intentamos usar la configuración JS primero, si falla usamos el JSON
+    var mongodbConfig;
+    try {
+        mongodbConfig = require('../../config/mongodb/mongodb.config').mongodb;
+    } catch (error) {
+        console.log('Usando configuración de respaldo (JSON)');
+        mongodbConfig = require('../../config/mongodb/mongodb-config').mongodb;
+    }
 
     function init() {
         var options = {
             useNewUrlParser: true,
-			useUnifiedTopology: true 
+            useUnifiedTopology: true 
         };
 
         var connectionString = prepareConnectionString(mongodbConfig);
