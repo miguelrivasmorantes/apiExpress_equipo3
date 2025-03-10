@@ -29,8 +29,7 @@ function getPayments(req, res, next) {
 }
 
 function getPaymentsByUserId(req, res, next) {
-  handleRequest(
-    PaymentService.fetchPaymentByUserId, req, res, next, req.params.usuario_id);
+  handleRequest(PaymentService.fetchPaymentByUserId, req, res, next, req.params.usuario_id);
 }
 
 function getPaymentsByReservationId(req, res, next) {
