@@ -38,8 +38,7 @@ function getPaymentsByReservationId(req, res, next) {
 }
 
 function formatPaymentDatesMiddleware(req, res, next) {
-  req.response = formatPaymentDates(req.response);
-  next();
+  handleRequest(formatPaymentDates, req, res, next, req.response);
 }
 
 
