@@ -7,7 +7,7 @@
     getUserById: getUserById,
     modifyUser: modifyUser,
     removeUser: removeUser,
-    loginUsers: loginUsers,
+    // loginUsers: loginUsers,
   };
 
   var UserService = require("./user.module")().UserService;
@@ -25,18 +25,18 @@
     }
   }
 
-  function loginUsers(req, res, next) {
-    UserService.loginUsers(req.body).then(success).catch(failure);
+  // function loginUsers(req, res, next) {
+  //   UserService.loginUsers(req.body).then(success).catch(failure);
 
-    function success(data) {
-      req.response = data;
-      next();
-    }
+  //   function success(data) {
+  //     req.response = data;
+  //     next();
+  //   }
 
-    function failure(error) {
-      next(error);
-    }
-  }
+  //   function failure(error) {
+  //     next(error);
+  //   }
+  // }
 
   function getUsers(req, res, next) {
     UserService.fetchUsers().then(success).catch(failure);

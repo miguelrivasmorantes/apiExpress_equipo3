@@ -29,25 +29,23 @@ const UserSchema = mongoose.Schema({
     required: true,
   },
 
-  historial_reservas: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "reservations",
-    required: true,
-}],
+  historial_reservas: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "reservations" },
+  ],
 });
 
-UserSchema.pre('save', async function (next) {
-    if (this.isModified('password') || this.isNew) {
-      const salt = await bcrypt.genSalt(10);
-      this.password = bcrypt.hash(this.password, salt);
-    }
-    next();
-  });
+// UserSchema.pre('save', async function (next) {
+//     if (this.isModified('password') || this.isNew) {
+//       const salt = await bcrypt.genSalt(10);
+//       this.password = bcrypt.hash(this.password, salt);
+//     }
+//     next();
+//   });
 
 
-UserSchema.methods.comparePassword = function (password) {
-    return bcrypt.compare(password, this.password);
-  };
+// UserSchema.methods.comparePassword = function (password) {
+//     return bcrypt.compare(password, this.password);
+//   };
   
   const User = mongoose.model('users', UserSchema);
   
