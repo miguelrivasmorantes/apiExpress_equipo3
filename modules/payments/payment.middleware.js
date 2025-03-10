@@ -1,13 +1,14 @@
 "use strict";
 
 const PaymentService = require("./payment.module")().PaymentService;
+const { formatPaymentDates } = require("../../utils/dateFormatter");
 
 module.exports = {
   addPayment: addPayment,
   getPayments: getPayments,
   getPaymentsByUserId: getPaymentsByUserId,
   getPaymentsByReservationId: getPaymentsByReservationId,
-  formatPaymentDates: formatPaymentDates,
+  formatPaymentDates: formatPaymentDatesMiddleware,
 };
 
 async function handleRequest(serviceFunction, req, res, next, ...params) {
@@ -36,24 +37,8 @@ function getPaymentsByReservationId(req, res, next) {
   handleRequest(PaymentService.fetchPaymentByReservationId, req, res, next, req.params.reserva_id);
 }
 
-const formatDate = (date) =>
-  date && !isNaN(new Date(date))
-    ? new Date(date).toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" })
-    : "Fecha no disponible";
-
-function formatPaymentDates(req, res, next) {
-  if (Array.isArray(req.response)) {
-    req.response = req.response.map((pago) => ({
-      ...pago.toObject(),
-      fecha_pago: formatDate(pago.fecha_pago),
-      reserva_id: {
-        ...pago.reserva_id?.toObject(),
-        fecha_inicio: formatDate(pago.reserva_id?.fecha_inicio),
-        fecha_fin: formatDate(pago.reserva_id?.fecha_fin),
-      },
-    }));
-  }
-
+function formatPaymentDatesMiddleware(req, res, next) {
+  req.response = formatPaymentDates(req.response);
   next();
 }
 
