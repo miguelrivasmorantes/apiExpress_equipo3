@@ -1,4 +1,3 @@
-# Usa la imagen oficial de Node con Alpine
 FROM node:18-alpine
 
 # Establece el directorio de trabajo
