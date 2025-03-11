@@ -5,9 +5,6 @@ const router = express.Router();
 
 //Rutas para administrar habitaciones
 
-//Rutas para autenticación
-
-
 //Rutas para administrar usuarios
 const userRouter = require("../modules/users/user.module")().UserController;
 router.use("/usuarios", userRouter);
