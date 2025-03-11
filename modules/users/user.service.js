@@ -24,21 +24,6 @@
     return User.findById(usuario_id).exec();
   }
 
-  async function loginUsers(credentials) {
-    const { username, password } = credentials;
-    const user = await User.findOne({ username }).exec();
-    console.log(credentials);
-    console.log(user);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      throw new Error('Invalid credentials');
-    }
-    return user;
-  }
-
   function updateUser(usuario_id, user) {
     return User.findByIdAndUpdate(usuario_id, user, { new: true }).exec();
   }
@@ -46,4 +31,39 @@
   function deleteUser(usuario_id) {
     return User.findByIdAndRemove(usuario_id).exec();
   }
+
+  async function loginUsers(credentials) {
+    try {
+      const { username, password } = credentials;
+      console.log("Credenciales recibidas:", credentials);
+  
+      // Buscar el usuario por nombre de usuario
+      const user = await User.findOne({ username });
+      console.log("Usuario encontrado:", user);
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      // Imprimir la contraseña almacenada (cifrada) y la contraseña proporcionada para comparar
+      console.log("Contraseña proporcionada:", password);
+      console.log("Contraseña almacenada (cifrada):", user.password);
+  
+      // Comparar la contraseña con el método comparePassword
+      const isMatch = await user.comparePassword(password);
+      console.log("Contraseña válida:", isMatch);
+  
+      if (!isMatch) {
+        throw new Error("Invalid credentials");
+      }
+  
+      // Retornar el usuario si todo es correcto
+      return user;
+    } catch (error) {
+      console.error("Error al hacer login:", error);
+      throw new Error(`Error logging in: ${error.message}`);
+    }
+  }
+  
+  
 })();
