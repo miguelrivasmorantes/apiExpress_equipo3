@@ -17,4 +17,7 @@ router.use("/pagos", paymentRouter);
 
 //Rutas para administrar reseñas
 
+const loginRouter = require("../modules/auth/auth.controller")
+router.use("/auth", loginRouter);
+
 module.exports = router;

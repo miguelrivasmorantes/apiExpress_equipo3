@@ -8,6 +8,3 @@
 .env.development
 .env.test
 .env.production
-/modules/users/
-/modules/users/
-/modules/auth/
