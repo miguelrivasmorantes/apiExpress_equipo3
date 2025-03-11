@@ -1,81 +1,44 @@
-(function () {
-  "use strict";
+"use strict";
+const UserService = require("./user.module")().UserService;
 
-  module.exports = {
-    addUser: addUser,
-    getUsers: getUsers,
-    getUserById: getUserById,
-    modifyUser: modifyUser,
-    removeUser: removeUser,
-  };
+module.exports = {
+  addUser,
+  getUsers,
+  getUserById,
+  modifyUser,
+  removeUser,
+  loginUser,
+};
 
-  var UserService = require("./user.module")().UserService;
-
-  function addUser(req, res, next) {
-    UserService.createUser(req.body).then(success).catch(failure);
-
-    function success(data) {
-      req.response = data;
-      next();
-    }
-
-    function failure(error) {
-      next(error);
-    }
+async function handleRequest(serviceFunction, req, res, next, ...params){
+  try{
+    req.response = await serviceFunction(...params);
+    next();
+  } catch (error) {
+    next(error);
   }
+}
 
-  function getUsers(req, res, next) {
-    UserService.fetchUsers().then(success).catch(failure);
+function addUser(req, res, next) {
+  handleRequest(UserService.createUser, req, res, next, req.body);
+}
 
-    function success(data) {
-      req.response = data;
-      console.log("Xde", data);
-      next();
-    }
+function loginUser(req, res, next) {
+  handleRequest(UserService.loginUsers, req, res, next, req.body);
+}
 
-    function failure(err) {
-      next(err);
-    }
-  }
+function getUsers(req, res, next) {
+  handleRequest(UserService.fetchUsers, req, res, next);
+}
 
-  function getUserById(req, res, next) {
-    UserService.fetchUserById(req.params.userId).then(success).catch(failure);
+function getUserById(req, res, next) {
+  handleRequest(UserService.fetchUserById, req, res, next, req.params.usuario_id);
+}
 
-    function success(data) {
-      req.response = data;
-      next();
-    }
+function modifyUser(req, res, next) {
+  handleRequest(UserService.updateUser, req, res, next, req.params.usuario_id, req.body);
+}
 
-    function failure(err) {
-      next(err);
-    }
-  }
-
-  function modifyUser(req, res, next) {
-    UserService.updateUser(req.params.userId, req.body)
-      .then(success)
-      .catch(error);
-
-    function success(data) {
-      req.response = data;
-      next();
-    }
-
-    function error(err) {
-      next(err);
-    }
-  }
-
-  function removeUser(req, res, next) {
-    UserService.deleteUser(req.params.userId).then(success).catch(error);
-
-    function success(data) {
-      req.response = data;
-      next();
-    }
-
-    function error(err) {
-      next(err);
-    }
-  }
-})();
+function removeUser(req, res, next) {
+  handleRequest(UserService.deleteUser, req, res, next, req.params.usuario_id);
+}

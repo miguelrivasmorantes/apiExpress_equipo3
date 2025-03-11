@@ -1,37 +1,59 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-const UserSchema = new mongoose.Schema(
-  {
-    firstName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    lastName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      match: [/^\S+@\S+\.\S+$/, "El correo electrónico no es válido"], // Validación de email
-    },
-    phoneNumber: {
-      type: String, // Cambiado a String para permitir números con formato internacional (+123456789)
-      required: true,
-      trim: true,
-      match: [/^\+?\d{7,15}$/, "El número de teléfono no es válido"], // Validación básica de teléfono
-    },
+const UserSchema = mongoose.Schema({
+
+  nombre: {
+    type: String,
+    required: true,
   },
-  {
-    timestamps: true, // Agrega automáticamente createdAt y updatedAt
+
+  email: {
+    type: String,
+    required: true,
   },
-);
 
-const User = mongoose.model("User", UserSchema);
+  telefono: {
+    type: String,
+    required: true,
+  },
 
-module.exports = { User };
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+
+  password: {
+    type: String,
+    required: true,
+  },
+
+  historial_reservas: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "reservations" },
+  ],
+});
+
+UserSchema.pre('save', async function (next) {
+  if (this.isModified('password') || this.isNew) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt); // Añadir await aquí
+      next();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    next();
+  }
+});
+
+
+
+UserSchema.methods.comparePassword = function (password) {
+    return bcrypt.compare(password, this.password);
+  };
+  
+  const User = mongoose.model('users', UserSchema);
+  
+  module.exports = { User };

@@ -14,15 +14,19 @@
     res.status(200).json(req.response);
   });
 
-  router.get("/:userId", UserMiddleware.getUserById, function (req, res) {
+  router.post("/login", UserMiddleware.loginUser, function (req, res) {
     res.status(200).json(req.response);
   });
 
-  router.put("/:UserId", UserMiddleware.modifyUser, function (req, res) {
+  router.get("/:usuario_id", UserMiddleware.getUserById, function (req, res) {
     res.status(200).json(req.response);
   });
 
-  router.delete("/:UserId", UserMiddleware.removeUser, function (req, res) {
+  router.put("/:usuario_id", UserMiddleware.modifyUser, function (req, res) {
+    res.status(200).json(req.response);
+  });
+
+  router.delete("/:usuario_id", UserMiddleware.removeUser, function (req, res) {
     res.status(200).json(req.response);
   });
 

@@ -7,6 +7,7 @@
     fetchUserById: fetchUserById,
     updateUser: updateUser,
     deleteUser: deleteUser,
+    loginUsers: loginUsers,
   };
 
   const { User } = require("./user.model");
@@ -16,19 +17,42 @@
   }
 
   function fetchUsers() {
-    return User.find({}).exec();
+    return User.find().exec();
   }
 
-  function fetchUserById(userId) {
-    return User.findById(userId).exec();
+  function fetchUserById(usuario_id) {
+    return User.findById(usuario_id).exec();
   }
 
-  function updateUser(userId, user) {
-    w;
-    return User.findByIdAndUpdate(userId, user, { new: true }).exec();
+  function updateUser(usuario_id, user) {
+    return User.findByIdAndUpdate(usuario_id, user, { new: true }).exec();
   }
 
-  function deleteUser(userId) {
-    return User.findByIdAndRemove(userId).exec();
+  function deleteUser(usuario_id) {
+    return User.findByIdAndRemove(usuario_id).exec();
   }
+
+  async function loginUsers(credentials) {
+    try {
+      const { username, password } = credentials;
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+      
+      const isMatch = await user.comparePassword(password);
+  
+      if (!isMatch) {
+        throw new Error("Invalid credentials");
+      }
+  
+      return user;
+      
+    } catch (error) {
+      throw new Error(`Error logging in: ${error.message}`);
+    }
+  }
+  
+  
 })();

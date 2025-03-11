@@ -1,46 +1,31 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema;
-
-const User = require('../users/user.model');
-const Hotel = require('../hotels/hotel.model');
-const Room = require('../rooms/room.model');
-
-const ReservationSchema = new Schema({
+const ReservationSchema = new mongoose.Schema({
     usuario_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
     },
     hotel_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'Hotel',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "hotels",
+      required: true,
     },
     habitacion_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'Room',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "rooms",
+      required: true,
     },
-    fecha_inicio: {
-        type: Date,
-        required: true
-    },
-    fecha_fin: {
-        type: Date,
-        required: true
-    },
-    precio_total: {
-        type: Number,
-        required: true
-    },
+    fecha_inicio: { type: Date, required: true },
+    fecha_fin: { type: Date, required: true },
+    precio_total: { type: Number, required: true },
     estado: {
-        type: String,
-        enum: ['confirmada', 'pendiente', 'cancelada'],
-        required: true
-    }
-}, {
-    timestamps: true,
-});
+      type: String,
+      enum: ["confirmada", "cancelada", "pendiente"],
+      default: "pendiente",
+    },
+  });
 
-module.exports = mongoose.model('Reservation', ReservationSchema);
+  const Reservation = mongoose.model("reservations", ReservationSchema);
+
+  module.exports = { Reservation };
