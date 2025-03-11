@@ -3,6 +3,9 @@ const router = express.Router();
 
 //Rutas para administrar hoteles
 
+const hotelRouter = require("../modules/hotels/hotel.module")().HotelController;
+router.use("/hoteles", hotelRouter);
+
 //Rutas para administrar habitaciones
 
 //Rutas para administrar usuarios
@@ -19,5 +22,8 @@ const paymentRouter = require("../modules/payments/payment.module")().PaymentCon
 router.use("/pagos", paymentRouter);
 
 //Rutas para administrar reseñas
+
+const loginRouter = require("../modules/auth/auth.controller")
+router.use("/auth", loginRouter);
 
 module.exports = router;
