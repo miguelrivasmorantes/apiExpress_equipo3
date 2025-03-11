@@ -3,6 +3,9 @@ const router = express.Router();
 
 //Rutas para administrar hoteles
 
+const hotelRouter = require("../modules/hotels/hotel.module")().HotelController;
+router.use("/hoteles", hotelRouter);
+
 //Rutas para administrar habitaciones
 
 //Rutas para administrar usuarios
