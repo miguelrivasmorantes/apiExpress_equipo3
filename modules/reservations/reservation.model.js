@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 
-const ReservationSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const users = require('../users/user.model');
+const hotels = require('../hotels/hotel.model');
+const rooms = require('../rooms/room.model');
+
+const ReservationSchema = new Schema({
     usuario_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
@@ -20,12 +26,14 @@ const ReservationSchema = new mongoose.Schema({
     fecha_fin: { type: Date, required: true },
     precio_total: { type: Number, required: true },
     estado: {
-      type: String,
-      enum: ["confirmada", "cancelada", "pendiente"],
-      default: "pendiente",
-    },
-  });
+        type: String,
+        enum: ['confirmada', 'pendiente', 'cancelada'],
+        required: true
+    }
+}, {
+    timestamps: true,
+});
 
-  const Reservation = mongoose.model("reservations", ReservationSchema);
+const Reservation = mongoose.model("reservations", ReservationSchema);
 
-  module.exports = { Reservation };
+module.exports = { Reservation };
