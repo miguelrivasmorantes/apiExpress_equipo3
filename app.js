@@ -2,18 +2,16 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-const cors = require('cors');
+var logger = require('morgan');
 
 var app = express();
-
-app.use(cors());
 
 app.set('view engine', 'ejs');  
 app.set('views', path.join(__dirname, 'views'));  
 
 var MongoDBUtil = require('./modules/mongodb/mongodb.module').MongoDBUtil;
 
-// app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
