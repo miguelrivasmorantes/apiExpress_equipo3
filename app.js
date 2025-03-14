@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
+require("dotenv").config();
 
 var app = express();
 
@@ -10,6 +12,13 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));  
 
 var MongoDBUtil = require('./modules/mongodb/mongodb.module').MongoDBUtil;
+
+app.use(cors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
 
 app.use(logger('dev'));
 app.use(express.json());

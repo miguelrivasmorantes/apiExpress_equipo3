@@ -1,3 +1,5 @@
+var jwt = require("jsonwebtoken");
+
 (function () {
   "use strict";
 
@@ -8,6 +10,7 @@
     updateUser: updateUser,
     deleteUser: deleteUser,
     loginUsers: loginUsers,
+    validateToken: validateToken,
   };
 
   const { User } = require("./user.model");
@@ -32,7 +35,7 @@
     return User.findByIdAndRemove(usuario_id).exec();
   }
 
-  async function loginUsers(credentials) {
+  async function loginUsers(credentials, req, res) {
     try {
       const { username, password } = credentials;
       const user = await User.findOne({ username });
@@ -40,19 +43,51 @@
       if (!user) {
         throw new Error("User not found");
       }
-      
-      const isMatch = await user.comparePassword(password);
   
+      const isMatch = await user.comparePassword(password);
       if (!isMatch) {
         throw new Error("Invalid credentials");
       }
   
-      return user;
-      
+      const token = jwt.sign(
+        { userId: user._id, username: user.username },
+        process.env.JWT_SECRET,
+        { expiresIn: "30s" }
+      );
+  
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+        maxAge: 30 * 1000,
+      });
+  
+      return { user };
+  
     } catch (error) {
       throw new Error(`Error logging in: ${error.message}`);
     }
   }
   
+
+  async function validateToken(req) {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
+        return { valid: false, message: "No token provided" };
+      }
+  
+      return new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+          if (err) {
+            return resolve({ valid: false, message: "Invalid token" });
+          }
+          resolve({ valid: true, user: decoded });
+        });
+      });
+    } catch (error) {
+      return { valid: false, message: "Server error" };
+    }
+  }
   
 })();
