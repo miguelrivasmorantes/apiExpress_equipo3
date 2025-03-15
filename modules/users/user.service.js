@@ -1,3 +1,5 @@
+var jwt = require("jsonwebtoken");
+
 (function () {
   "use strict";
 
@@ -8,6 +10,7 @@
     updateUser: updateUser,
     deleteUser: deleteUser,
     loginUsers: loginUsers,
+    validateToken: validateToken,
   };
 
   const { User } = require("./user.model");
@@ -32,38 +35,63 @@
     return User.findByIdAndRemove(usuario_id).exec();
   }
 
-  async function loginUsers(credentials) {
+  async function loginUsers(credentials, req, res) {
     try {
       const { username, password } = credentials;
-      console.log("Credenciales recibidas:", credentials);
-  
-      // Buscar el usuario por nombre de usuario
       const user = await User.findOne({ username });
-      console.log("Usuario encontrado:", user);
   
       if (!user) {
         throw new Error("User not found");
       }
   
-      // Imprimir la contraseña almacenada (cifrada) y la contraseña proporcionada para comparar
-      console.log("Contraseña proporcionada:", password);
-      console.log("Contraseña almacenada (cifrada):", user.password);
-  
-      // Comparar la contraseña con el método comparePassword
       const isMatch = await user.comparePassword(password);
-      console.log("Contraseña válida:", isMatch);
-  
       if (!isMatch) {
         throw new Error("Invalid credentials");
       }
+
+      const secretKey = process.env.JWT_SECRET || "defaultSecretKey";
+
+      const token = jwt.sign(
+        { userId: user._id, username: user.username },
+        secretKey,
+        { expiresIn: "30s" }
+      );
   
-      // Retornar el usuario si todo es correcto
-      return user;
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+        maxAge: 30 * 1000,
+      });
+  
+      return { user };
+  
     } catch (error) {
-      console.error("Error al hacer login:", error);
       throw new Error(`Error logging in: ${error.message}`);
     }
   }
   
+
+  async function validateToken(req) {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
+        return { valid: false, message: "No token provided" };
+      }
+
+      const secretKey = process.env.JWT_SECRET || "defaultSecretKey";
+
+      return new Promise((resolve, reject) => {
+        jwt.verify(token, secretKey, (err, decoded) => {
+          if (err) {
+            return resolve({ valid: false, message: "Invalid token" });
+          }
+          resolve({ valid: true, user: decoded });
+        });
+      });
+    } catch (error) {
+      return { valid: false, message: "Server error" };
+    }
+  }
   
 })();
