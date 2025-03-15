@@ -48,10 +48,12 @@ var jwt = require("jsonwebtoken");
       if (!isMatch) {
         throw new Error("Invalid credentials");
       }
-  
+
+      const secretKey = process.env.JWT_SECRET || "defaultSecretKey";
+
       const token = jwt.sign(
         { userId: user._id, username: user.username },
-        process.env.JWT_SECRET,
+        secretKey,
         { expiresIn: "30s" }
       );
   
@@ -76,9 +78,11 @@ var jwt = require("jsonwebtoken");
       if (!token) {
         return { valid: false, message: "No token provided" };
       }
-  
+
+      const secretKey = process.env.JWT_SECRET || "defaultSecretKey";
+
       return new Promise((resolve, reject) => {
-        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        jwt.verify(token, secretKey, (err, decoded) => {
           if (err) {
             return resolve({ valid: false, message: "Invalid token" });
           }
