@@ -28,7 +28,7 @@
     }
   
     function deleteHotel(hotelId) {
-      return Hotel.findByIdAndRemove(hotelId).exec();
+      return Hotel.findByIdAndDelete(hotelId).exec();
     }
   })();
   
