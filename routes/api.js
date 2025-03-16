@@ -21,12 +21,11 @@ router.use("/reservas", reservationRouter);
 const paymentRouter = require("../modules/payments/payment.module")().PaymentController;
 router.use("/pagos", paymentRouter);
 
-//Rutas para administrar reseñas
-
-const loginRouter = require("../modules/auth/auth.controller")
-router.use("/auth", loginRouter);
-
 const roomRouter = require("../modules/rooms/room.controller");
 router.use("/rooms", roomRouter);
+
+//Rutas para administrar reseñas
+const loginRouter = require("../modules/auth/auth.controller")
+router.use("/auth", loginRouter);
 
 module.exports = router;

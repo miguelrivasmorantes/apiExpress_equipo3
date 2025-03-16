@@ -10,6 +10,7 @@ module.exports = {
   addRoom,
   fetchRooms,
   fetchRoomsByHotelId,
+  fetchRoomsByType
 };
 
 
@@ -35,3 +36,8 @@ function fetchRoomsByHotelId(hotel_id){
   })
   .select("tipo capacidad precio_por_noche disponibilidad");
 }
+
+function fetchRoomsByType(tipoDeCuarto){
+  return Room.find({ tipo: tipoDeCuarto });
+}
+

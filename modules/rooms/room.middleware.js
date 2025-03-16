@@ -5,7 +5,8 @@ const RoomService = require("./room.module")().RoomService;
 module.exports = {
     addRoom: addRoom,
     getRooms: getRooms,
-    getRoomsByHotelId: getRoomsByHotelId,
+    getRoomByHotelId: getRoomByHotelId,
+    getRoomByType: getRoomByType
 };
 
 async function handleRequest(serviceFunction, req, res, next, ...params) {
@@ -25,7 +26,11 @@ function getRooms(req, res, next){
     handleRequest(RoomService.fetchRooms, req, res, next);
 }
 
-function getRoomsByHotelId(req, res, next){
+function getRoomByHotelId(req, res, next){
     handleRequest(RoomService.fetchRoomsByHotelId, req, res, next, req.params.hotel_id);
+}
+
+function getRoomByType(req, res, next){
+    handleRequest(RoomService.fetchRoomsByType, req, res, next, req.params.tipos);
 }
 
