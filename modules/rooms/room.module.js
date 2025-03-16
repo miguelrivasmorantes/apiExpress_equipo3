@@ -1,15 +1,15 @@
 (function () {
-    "use strict";
+  "use strict";
   
-    module.exports = init;
+  module.exports = init;
   
-    function init() {
-      return {
-        RoomController: require("./room.controller"),
-        RoomMiddleware: require("./room.middleware"),
-        RoomService: require("./room.service"),
-        RoomModel: require("./room.model"),
-      };
-    }
-  })();
+  function init() {
+    return {
+      RoomController: require("./room.controller"),
+      RoomMiddleware: require("./room.middleware"),
+      RoomService: require("./room.service"),
+      RoomModel: require("./room.model"),
+    };
+  }
+})();
   
