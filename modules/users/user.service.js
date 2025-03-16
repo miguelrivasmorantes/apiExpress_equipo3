@@ -11,6 +11,7 @@ var jwt = require("jsonwebtoken");
     deleteUser: deleteUser,
     loginUsers: loginUsers,
     validateToken: validateToken,
+    logoutUser: logoutUser,
   };
 
   const { User } = require("./user.model");
@@ -54,14 +55,14 @@ var jwt = require("jsonwebtoken");
       const token = jwt.sign(
         { userId: user._id, username: user.username },
         secretKey,
-        { expiresIn: "30s" }
+        { expiresIn: "30m" }
       );
   
       res.cookie("token", token, {
         httpOnly: true,
         secure: false,
         sameSite: "Lax",
-        maxAge: 30 * 1000,
+        maxAge: 30 * 60 * 1000,
       });
   
       return { user };
@@ -93,5 +94,19 @@ var jwt = require("jsonwebtoken");
       return { valid: false, message: "Server error" };
     }
   }
+
+  function logoutUser(req, res) {
+    try {
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+      });
+  
+      res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+      res.status(500).json({ message: "Error logging out" });
+    }
+  }  
   
 })();

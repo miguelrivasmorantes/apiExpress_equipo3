@@ -8,7 +8,8 @@ module.exports = {
   modifyUser,
   removeUser,
   loginUser,
-  validateToken
+  validateToken,
+  logoutUser,
 };
 
 async function handleRequest(serviceFunction, req, res, next, ...params){
@@ -46,4 +47,8 @@ function modifyUser(req, res, next) {
 
 function removeUser(req, res, next) {
   handleRequest(UserService.deleteUser, req, res, next, req.params.usuario_id);
+}
+
+function logoutUser(req, res, next) {
+  handleRequest(UserService.logoutUser, req, res, next, req, res);
 }
