@@ -26,4 +26,7 @@ router.use("/pagos", paymentRouter);
 const loginRouter = require("../modules/auth/auth.controller")
 router.use("/auth", loginRouter);
 
+const roomRouter = require("../modules/rooms/room.controller");
+router.use("/rooms", roomRouter);
+
 module.exports = router;
