@@ -23,7 +23,7 @@ router.use("/pagos", paymentRouter);
 
 //Rutas para administrar reseñas
 
-const reviewsRouter = require("../modules/reviews/reviews.controller");
+const reviewsRouter = require("../modules/reviews/reviews.module")().ReviewController;
 router.use("/reseñas", reviewsRouter);
 
 module.exports = router;
