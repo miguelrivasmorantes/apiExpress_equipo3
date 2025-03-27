@@ -10,6 +10,8 @@ services:
       - /app/node_modules
     networks:
       - api-network
+    env_file:
+      - .env
 
   mongo:
     image: mongo:latest
