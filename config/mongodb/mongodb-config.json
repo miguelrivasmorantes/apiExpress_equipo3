@@ -2,7 +2,7 @@
   "mongodb": {
     "server": "mongo:27017",
     "database": "ApiExpress",
-    "user": "manuelmunoz",
-    "password": "BnxmebESMN09"
+    "user": "",
+    "password": ""
   }
 } 
