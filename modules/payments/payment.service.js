@@ -34,7 +34,7 @@ function fetchPayments() {
         select: "nombre",
       },
     })
-    .select("fecha_pago monto metodo_pago");
+    .select("fecha_pago monto metodo_pago estado");
 }
 
 function fetchPaymentByUserId(usuario_id) {
@@ -54,7 +54,7 @@ function fetchPaymentByUserId(usuario_id) {
       model: User,
       select: "nombre email telefono",
     })
-    .select("fecha_pago monto metodo_pago");
+    .select("fecha_pago monto metodo_pago estado");
 }
 
 function fetchPaymentByReservationId(reserva_id) {
@@ -73,5 +73,5 @@ function fetchPaymentByReservationId(reserva_id) {
       model: User,
       select: "nombre email telefono",
     })
-    .select("fecha_pago monto metodo_pago");
+    .select("fecha_pago monto metodo_pago estado");
 }
