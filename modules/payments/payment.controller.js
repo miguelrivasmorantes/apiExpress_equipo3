@@ -22,7 +22,11 @@
     res.status(200).json(req.response);
   });
 
-  router.get("/:usuario_id/ultimo", PaymentMiddleware.getLastPaymentByUserId, PaymentMiddleware.formatPaymentDates, function (req, res) {
+  router.get("/usuario/:usuario_id/ultimo", PaymentMiddleware.getLastPaymentByUserId, PaymentMiddleware.formatPaymentDates, function (req, res) {
+    res.status(200).json(req.response);
+  });
+
+  router.get("/usuario/:usuario_id/total", PaymentMiddleware.getTotalPaymentsByUserId, function (req, res) {
     res.status(200).json(req.response);
   });
   

@@ -5,6 +5,7 @@ const { User } = require("../users/user.model");
 const { Reservation } = require("../reservations/reservation.model");
 const { Hotel } = require("../hotels/hotel.model");
 const { Room } = require("../rooms/room.model");
+const mongoose = require("mongoose");
 
 module.exports = {
   createPayment,
@@ -12,6 +13,7 @@ module.exports = {
   fetchPaymentByUserId,
   fetchPaymentByReservationId,
   fetchLastPaymentByUserId,
+  fetchTotalPaymentsByUserId,
 };
 
 function createPayment(payment) {
@@ -94,4 +96,31 @@ function fetchLastPaymentByUserId(usuario_id) {
         return null;
       }
     });
+}
+
+function fetchTotalPaymentsByUserId(usuario_id) {
+  return Payment.aggregate([
+    {
+      $match: { usuario_id: new mongoose.Types.ObjectId(usuario_id) },
+    },
+    {
+      $group: {
+        _id: "$usuario_id",
+        totalPagos: { $sum: 1 }, 
+      },
+    },
+    {
+      $project: {
+        _id: 0, 
+        usuario_id: "$_id", 
+        totalPagos: 1, 
+      },
+    },
+  ]).then((result) => {
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      return { usuario_id, totalPagos: 0 }; 
+    }
+  });
 }

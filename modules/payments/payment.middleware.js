@@ -10,6 +10,7 @@ module.exports = {
   getPaymentsByReservationId: getPaymentsByReservationId,
   formatPaymentDates: formatPaymentDatesMiddleware,
   getLastPaymentByUserId: getLastPaymentByUserId,
+  getTotalPaymentsByUserId: getTotalPaymentsByUserId,
 };
 
 async function handleRequest(serviceFunction, req, res, next, ...params) {
@@ -39,6 +40,10 @@ function getPaymentsByReservationId(req, res, next) {
 
 function getLastPaymentByUserId(req, res, next) {
   handleRequest(PaymentService.fetchLastPaymentByUserId, req, res, next, req.params.usuario_id);
+}
+
+function getTotalPaymentsByUserId(req, res, next) {
+  handleRequest(PaymentService.fetchTotalPaymentsByUserId, req, res, next, req.params.usuario_id);
 }
 
 function formatPaymentDatesMiddleware(req, res, next) {
