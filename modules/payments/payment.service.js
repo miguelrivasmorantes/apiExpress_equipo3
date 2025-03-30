@@ -8,17 +8,13 @@ const { Room } = require("../rooms/room.model");
 const mongoose = require("mongoose");
 
 module.exports = {
-  createPayment,
   fetchPayments,
   fetchPaymentByUserId,
   fetchPaymentByReservationId,
   fetchLastPaymentByUserId,
   fetchTotalPaymentsByUserId,
+  payReservation,
 };
-
-function createPayment(payment) {
-  return Payment.create(payment);
-}
 
 function fetchPayments() {
   return Payment.find()
@@ -65,7 +61,8 @@ function fetchPaymentByReservationId(reserva_id) {
     .populate({
       path: "reserva_id",
       model: Reservation,
-      select: "habitacion_id hotel_id fecha_inicio fecha_fin precio_total estado",
+      select:
+        "habitacion_id hotel_id fecha_inicio fecha_fin precio_total estado",
       populate: [
         { path: "hotel_id", model: Hotel, select: "nombre" },
         { path: "habitacion_id", model: Room, select: "tipo capacidad" },
@@ -80,7 +77,7 @@ function fetchPaymentByReservationId(reserva_id) {
 }
 
 function fetchLastPaymentByUserId(usuario_id) {
-  return Payment.find({ usuario_id, estado: "completado"})
+  return Payment.find({ usuario_id, estado: "completado" })
     .populate({
       path: "usuario_id",
       model: User,
@@ -106,21 +103,86 @@ function fetchTotalPaymentsByUserId(usuario_id) {
     {
       $group: {
         _id: "$usuario_id",
-        totalPagos: { $sum: 1 }, 
+        totalPagos: { $sum: 1 },
       },
     },
     {
       $project: {
-        _id: 0, 
-        usuario_id: "$_id", 
-        totalPagos: 1, 
+        _id: 0,
+        usuario_id: "$_id",
+        totalPagos: 1,
       },
     },
   ]).then((result) => {
     if (result.length > 0) {
       return result[0];
     } else {
-      return { usuario_id, totalPagos: 0 }; 
+      return { usuario_id, totalPagos: 0 };
     }
   });
+}
+
+function payReservation(reserva_id, paymentData) {
+  if (
+    !reserva_id ||
+    !paymentData.usuario_id ||
+    !paymentData.monto ||
+    !paymentData.metodo_pago ||
+    !paymentData.fecha_pago
+  ) {
+    throw new Error("Faltan datos requeridos para procesar el pago");
+  }
+
+  return Reservation.findById(reserva_id)
+    .populate({
+      path: "hotel_id",
+      model: Hotel,
+      select: "nombre",
+    })
+    .then((reserva) => {
+      if (!reserva) {
+        throw new Error("La reserva no existe");
+      }
+
+      return Payment.findOne({ reserva_id }).then((existingPayment) => {
+        if (existingPayment) {
+          throw new Error("La reserva ya ha sido pagada");
+        }
+
+        const newPayment = {
+          usuario_id: paymentData.usuario_id,
+          reserva_id: reserva_id,
+          monto: paymentData.monto,
+          metodo_pago: paymentData.metodo_pago,
+          fecha_pago: paymentData.fecha_pago,
+          estado: "completado",
+        };
+
+        return Payment.create(newPayment).then((payment) => {
+          reserva.estado = "confirmada";
+          return reserva.save().then(() => {
+            return Payment.findById(payment._id)
+              .populate({
+                path: "usuario_id",
+                model: User,
+                select: "nombre email",
+              })
+              .populate({
+                path: "reserva_id",
+                model: Reservation,
+                select: "fecha_inicio fecha_fin hotel_id",
+                populate: {
+                  path: "hotel_id",
+                  model: Hotel,
+                  select: "nombre",
+                },
+              });
+          });
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Error al procesar el pago de la reserva:", error);
+      throw new Error("Error al procesar el pago de la reserva");
+    });
 }
