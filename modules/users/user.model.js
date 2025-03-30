@@ -34,21 +34,34 @@ const UserSchema = mongoose.Schema({
   ],
 });
 
+async function hashPassword(password) {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
+}
+
 UserSchema.pre('save', async function (next) {
   if (this.isModified('password') || this.isNew) {
     try {
-      const salt = await bcrypt.genSalt(10);
-      this.password = await bcrypt.hash(this.password, salt); // Añadir await aquí
-      next();
+      this.password = await hashPassword(this.password);
     } catch (error) {
-      next(error);
+      return next(error);
     }
-  } else {
-    next();
   }
+  next();
 });
 
+UserSchema.pre('findOneAndUpdate', async function (next) {
+  const update = this.getUpdate();
 
+  if (update.password) {
+    try {
+      update.password = await hashPassword(update.password);
+    } catch (error) {
+      return next(error);
+    }
+  }
+  next();
+});
 
 UserSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
