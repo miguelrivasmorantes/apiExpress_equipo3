@@ -23,7 +23,7 @@ function addRoom(req, res, next){
 }
 
 function getRooms(req, res, next){
-    handleRequest(RoomService.fetchRooms, req, res, next);
+    handleRequest(RoomService.fetchRooms, req, res, next, req.query.fecha_inicio, req.query.fecha_fin);
 }
 
 function getRoomByHotelId(req, res, next){
