@@ -1,12 +1,15 @@
 "use strict"
 
 const RoomService = require("./room.module")().RoomService;
+const { formatReserveDates } = require("../../utils/dateFormatter")
 
 module.exports = {
     addRoom: addRoom,
     getRooms: getRooms,
     getRoomByHotelId: getRoomByHotelId,
-    getRoomByType: getRoomByType
+    getRoomByType: getRoomByType,
+    getAvailableRooms: getAvailableRooms,
+    formatReservesDates: formatReservesDates
 };
 
 async function handleRequest(serviceFunction, req, res, next, ...params) {
@@ -23,7 +26,7 @@ function addRoom(req, res, next){
 }
 
 function getRooms(req, res, next){
-    handleRequest(RoomService.fetchRooms, req, res, next, req.query.fecha_inicio, req.query.fecha_fin);
+    handleRequest(RoomService.fetchRooms, req, res, next);
 }
 
 function getRoomByHotelId(req, res, next){
@@ -32,5 +35,13 @@ function getRoomByHotelId(req, res, next){
 
 function getRoomByType(req, res, next){
     handleRequest(RoomService.fetchRoomsByType, req, res, next, req.params.tipos);
+}
+
+function getAvailableRooms(req, res, next){
+    handleRequest(RoomService.fetchRoomsIfAvailable, req, res, next, req.params);
+}
+
+function formatReservesDates(req, res, next) {
+    handleRequest(formatReserveDates, req, res, next, req.response);
 }
 

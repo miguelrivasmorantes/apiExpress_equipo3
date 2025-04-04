@@ -24,6 +24,27 @@ const formatPaymentDates = (data) => {
   return data;
 };
 
+const formatDateShort = (date) =>
+  date && !isNaN(new Date(date))
+    ? new Date(date).toLocaleDateString("es-ES", { 
+        year: "numeric", 
+        month: "numeric", 
+        day: "numeric" 
+      })
+    : "Fecha no disponible";
+
+const formatReserveDates = (data) => {
+  if (Array.isArray(data)){
+    return data.map(info => ({
+      ...info.toObject(),
+      habitacion_id: info.habitacion_id,
+      fecha_fin: formatDateShort(info.fecha_fin)
+    }))
+  }
+  return data;
+};
+
 module.exports = {
-  formatPaymentDates
+  formatPaymentDates,
+  formatReserveDates
 };

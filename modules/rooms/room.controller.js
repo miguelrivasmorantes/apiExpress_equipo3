@@ -21,7 +21,10 @@
     router.get("/habitaciones/:tipos", RoomMiddleware.getRoomByType, function (req, res) {
       res.status(200).json(req.response);
     });
-    
 
+    router.get("/disponible", RoomMiddleware.getAvailableRooms, RoomMiddleware.formatReservesDates, function(req, res){
+      res.status(200).json(req.response);
+    });
+    
     module.exports = router;
   })();

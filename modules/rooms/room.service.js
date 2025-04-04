@@ -10,7 +10,8 @@ module.exports = {
   addRoom,
   fetchRooms,
   fetchRoomsByHotelId,
-  fetchRoomsByType
+  fetchRoomsByType,
+  fetchRoomsIfAvailable
 };
 
 
@@ -41,3 +42,6 @@ function fetchRoomsByType(tipoDeCuarto){
   return Room.find({ tipo: tipoDeCuarto });
 }
 
+function fetchRoomsIfAvailable(){
+  return Reservation.find({}, { _id: 0, habitacion_id: 1, fecha_fin: 1});
+}
