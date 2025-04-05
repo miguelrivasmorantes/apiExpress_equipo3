@@ -96,8 +96,8 @@ function fetchLastPaymentByUserId(usuario_id) {
     });
 }
 
-function fetchTotalPaymentsByUserId(usuario_id) {
-  return Payment.aggregate([
+async function fetchTotalPaymentsByUserId(usuario_id) {
+  const result = await Payment.aggregate([
     {
       $match: { usuario_id: new mongoose.Types.ObjectId(usuario_id) },
     },
@@ -108,19 +108,32 @@ function fetchTotalPaymentsByUserId(usuario_id) {
       },
     },
     {
+      $lookup: {
+        from: "users",
+        localField: "_id",
+        foreignField: "_id",
+        as: "usuario",
+      },
+    },
+    {
+      $unwind: "$usuario",
+    },
+    {
       $project: {
         _id: 0,
         usuario_id: "$_id",
+        nombre: "$usuario.nombre",
         totalPagos: 1,
       },
     },
-  ]).then((result) => {
-    if (result.length > 0) {
-      return result[0];
-    } else {
-      return { usuario_id, totalPagos: 0 };
-    }
-  });
+  ]);
+
+  if (result.length > 0) {
+    return result[0];
+  } else {
+    const user = await User.findById(usuario_id).select("nombre");
+    return { usuario_id, nombre: user ? user.nombre : null, totalPagos: 0 };
+  }
 }
 
 async function createPendingPayment(reserva_id, metodo_pago) {
