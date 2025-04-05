@@ -13,7 +13,8 @@ module.exports = {
   fetchPaymentByReservationId,
   fetchLastPaymentByUserId,
   fetchTotalPaymentsByUserId,
-  payReservation,
+  confirmPayment,
+  createPendingPayment,
 };
 
 function fetchPayments() {
@@ -122,67 +123,57 @@ function fetchTotalPaymentsByUserId(usuario_id) {
   });
 }
 
-function payReservation(reserva_id, paymentData) {
-  if (
-    !reserva_id ||
-    !paymentData.usuario_id ||
-    !paymentData.monto ||
-    !paymentData.metodo_pago ||
-    !paymentData.fecha_pago
-  ) {
-    throw new Error("Faltan datos requeridos para procesar el pago");
+async function createPendingPayment(reserva_id, metodo_pago) {
+  if (!reserva_id || !metodo_pago) {
+    throw new Error("Faltan datos requeridos para crear el pago");
   }
 
-  return Reservation.findById(reserva_id)
-    .populate({
-      path: "hotel_id",
-      model: Hotel,
-      select: "nombre",
-    })
-    .then((reserva) => {
-      if (!reserva) {
-        throw new Error("La reserva no existe");
-      }
+  const reserva = await Reservation.findById(reserva_id);
+  if (!reserva) {
+    throw new Error("La reserva no existe");
+  }
 
-      return Payment.findOne({ reserva_id }).then((existingPayment) => {
-        if (existingPayment) {
-          throw new Error("La reserva ya ha sido pagada");
-        }
+  if (!reserva.usuario_id || !reserva.precio_total) {
+    throw new Error("La reserva no tiene usuario o precio total");
+  }
 
-        const newPayment = {
-          usuario_id: paymentData.usuario_id,
-          reserva_id: reserva_id,
-          monto: paymentData.monto,
-          metodo_pago: paymentData.metodo_pago,
-          fecha_pago: paymentData.fecha_pago,
-          estado: "completado",
-        };
+  const newPayment = {
+    reserva_id: reserva._id,
+    usuario_id: reserva.usuario_id,
+    estado: "pendiente",
+    monto: reserva.precio_total,
+    metodo_pago,
+    fecha_pago: new Date(),
+  };
 
-        return Payment.create(newPayment).then((payment) => {
-          reserva.estado = "confirmada";
-          return reserva.save().then(() => {
-            return Payment.findById(payment._id)
-              .populate({
-                path: "usuario_id",
-                model: User,
-                select: "nombre email",
-              })
-              .populate({
-                path: "reserva_id",
-                model: Reservation,
-                select: "fecha_inicio fecha_fin hotel_id",
-                populate: {
-                  path: "hotel_id",
-                  model: Hotel,
-                  select: "nombre",
-                },
-              });
-          });
-        });
-      });
-    })
-    .catch((error) => {
-      console.error("Error al procesar el pago de la reserva:", error);
-      throw new Error("Error al procesar el pago de la reserva");
-    });
+  return await Payment.create(newPayment);
+}
+
+async function confirmPayment(pago_id, metodo_pago) {
+  try {
+    const payment = await Payment.findOne({ _id: pago_id });
+
+    const reserva = await Reservation.findOne({ _id: payment.reserva_id });
+
+    if (!reserva) {
+      throw new Error("La reserva no existe");
+    }
+
+    if (!payment) {
+      throw new Error("El pago no existe");
+    }
+
+    payment.estado = "completado";
+    payment.metodo_pago = metodo_pago;
+    payment.fecha_pago = new Date();
+    reserva.estado = "confirmada";
+    
+    await reserva.save();
+    await payment.save();
+
+    return payment;
+
+  } catch (error) {
+    throw new Error("Error al confirmar el pago: " + error.message);
+  }
 }

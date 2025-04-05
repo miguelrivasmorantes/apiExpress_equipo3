@@ -6,12 +6,22 @@
 
   var PaymentMiddleware = require("./payment.module")().PaymentMiddleware;
 
+  router.put(
+    "/pagar/:pago_id",
+    PaymentMiddleware.confirmPayment,
+    PaymentMiddleware.formatPaymentDates,
+    (req, res) => {
+      res.status(200).json(req.response);
+    },
+  );
+
   router.post(
-    "/reserva/:reserva_id",
-    PaymentMiddleware.payReservation,
+    "/crear/:reserva_id",
+    PaymentMiddleware.createPendingPaymentMiddleware,
+    PaymentMiddleware.formatPaymentDates,
     (req, res) => {
       res.status(201).json(req.response);
-    }
+    },
   );
 
   router.get(
@@ -20,7 +30,7 @@
     PaymentMiddleware.formatPaymentDates,
     function (req, res) {
       res.status(200).json(req.response);
-    }
+    },
   );
 
   router.get(
@@ -29,7 +39,7 @@
     PaymentMiddleware.formatPaymentDates,
     function (req, res) {
       res.status(200).json(req.response);
-    }
+    },
   );
 
   router.get(
@@ -38,7 +48,7 @@
     PaymentMiddleware.formatPaymentDates,
     function (req, res) {
       res.status(200).json(req.response);
-    }
+    },
   );
 
   router.get(
@@ -47,7 +57,7 @@
     PaymentMiddleware.formatPaymentDates,
     function (req, res) {
       res.status(200).json(req.response);
-    }
+    },
   );
 
   router.get(
@@ -55,7 +65,7 @@
     PaymentMiddleware.getTotalPaymentsByUserId,
     function (req, res) {
       res.status(200).json(req.response);
-    }
+    },
   );
 
   module.exports = router;

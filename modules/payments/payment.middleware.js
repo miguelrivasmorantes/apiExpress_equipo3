@@ -10,7 +10,8 @@ module.exports = {
   formatPaymentDates: formatPaymentDatesMiddleware,
   getLastPaymentByUserId: getLastPaymentByUserId,
   getTotalPaymentsByUserId: getTotalPaymentsByUserId,
-  payReservation: payReservationMiddleware,
+  confirmPayment: confirmPaymentMiddleware,
+  createPendingPaymentMiddleware: createPendingPaymentMiddleware,
 };
 
 async function handleRequest(serviceFunction, req, res, next, ...params) {
@@ -32,7 +33,7 @@ function getPaymentsByUserId(req, res, next) {
     req,
     res,
     next,
-    req.params.usuario_id
+    req.params.usuario_id,
   );
 }
 
@@ -42,7 +43,7 @@ function getPaymentsByReservationId(req, res, next) {
     req,
     res,
     next,
-    req.params.reserva_id
+    req.params.reserva_id,
   );
 }
 
@@ -52,7 +53,7 @@ function getLastPaymentByUserId(req, res, next) {
     req,
     res,
     next,
-    req.params.usuario_id
+    req.params.usuario_id,
   );
 }
 
@@ -62,7 +63,7 @@ function getTotalPaymentsByUserId(req, res, next) {
     req,
     res,
     next,
-    req.params.usuario_id
+    req.params.usuario_id,
   );
 }
 
@@ -70,16 +71,28 @@ function formatPaymentDatesMiddleware(req, res, next) {
   handleRequest(formatPaymentDates, req, res, next, req.response);
 }
 
-function payReservationMiddleware(req, res, next) {
+function confirmPaymentMiddleware(req, res, next) {
+  const { pago_id } = req.params;
+  const { metodo_pago } = req.body;
+  const { fecha_pago } = req.body;
+
+  if (!pago_id || !/^[0-9a-fA-F]{24}$/.test(pago_id)) {
+    return res.status(400).json({ message: "El ID de pago no es válido" });
+  }
+
+  handleRequest(PaymentService.confirmPayment, req, res, next, pago_id, metodo_pago, fecha_pago);
+}
+
+function createPendingPaymentMiddleware(req, res, next) {
   const { reserva_id } = req.params;
-  const paymentData = req.body;
+  const metodo_pago = req.body.metodo_pago;
 
   handleRequest(
-    PaymentService.payReservation,
+    PaymentService.createPendingPayment,
     req,
     res,
     next,
     reserva_id,
-    paymentData
+    metodo_pago,
   );
 }
