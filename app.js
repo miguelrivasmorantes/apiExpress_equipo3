@@ -14,11 +14,11 @@ app.set('views', path.join(__dirname, 'views'));
 var MongoDBUtil = require('./modules/mongodb/mongodb.module').MongoDBUtil;
 
 app.use(cors({
-    origin: 'http://localhost:3001',
+    origin: ['http://localhost:3001', 'http://217.154.22.28:3001'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
